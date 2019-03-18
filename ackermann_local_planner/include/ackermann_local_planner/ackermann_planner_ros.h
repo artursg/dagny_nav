@@ -79,7 +79,7 @@ namespace ackermann_local_planner {
        * @param tf A pointer to a transform listener
        * @param costmap The cost map to use for assigning costs to trajectories
        */
-      virtual void initialize(std::string name, tf::TransformListener* tf,
+      virtual void initialize(std::string name, tf2_ros::Buffer* tf,
           costmap_2d::Costmap2DROS* costmap_ros);
 
       /**
@@ -119,14 +119,14 @@ namespace ackermann_local_planner {
       void reconfigureCB(AckermannPlannerConfig &config, uint32_t level);
 
       int nearestPoint(const int start_point, 
-          const tf::Stamped<tf::Pose> & pose) const;
+          const geometry_msgs::PoseStamped & pose) const;
       double scoreTrajectory(const std::vector<dubins_plus::Segment> &path,
           double global_length, double global_dtheta) const;
 
       void publishLocalPlan(std::vector<geometry_msgs::PoseStamped>& path);
       void publishGlobalPlan(std::vector<geometry_msgs::PoseStamped>& path);
 
-      tf::TransformListener* tf_; ///< @brief Used for transforming point clouds
+      tf2_ros::Buffer* tf_; ///< @brief Used for transforming point clouds
 
       // for visualisation, publishers of global and local plan
       ros::Publisher g_plan_pub_, l_plan_pub_;

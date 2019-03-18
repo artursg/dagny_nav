@@ -117,7 +117,7 @@ namespace ackermann_local_planner {
 
   void AckermannPlannerROS::initialize(
       std::string name,
-      tf::TransformListener* tf,
+      tf2_ros::Buffer* tf,
       costmap_2d::Costmap2DROS* costmap_ros) {
     if (! isInitialized()) {
 
@@ -153,7 +153,7 @@ namespace ackermann_local_planner {
   }
 
   int AckermannPlannerROS::nearestPoint(const int start_point,
-      const tf::Stamped<tf::Pose> & pose) const {
+    const geometry_msgs::PoseStamped& pose) const {
     int plan_point = start_point;
     double best_metric = std::numeric_limits<double>::max();
     for( int i=start_point; i<plan_.size(); i++ ) {
@@ -294,7 +294,7 @@ namespace ackermann_local_planner {
     double angular_vel = odom.twist.twist.angular.z;
 
     // if we have a pose cloud, get it, otherwise just use our current pose
-    tf::Stamped<tf::Pose> current_pose;
+    geometry_msgs::PoseStamped current_pose;
     if( have_particlecloud_ ) {
       // TODO(hendrix)
       //current_poses = particlecloud_;
@@ -307,7 +307,7 @@ namespace ackermann_local_planner {
       ROS_INFO_NAMED("ackermann_planner", "Got position from costmap");
     }
     ROS_INFO_NAMED("ackermann_planner", "Starting point (%f, %f)",
-        current_pose.getOrigin().x(), current_pose.getOrigin().y());
+        current_pose.pose.position.x, current_pose.pose.position.y);
 
     // get the nearest point on the global plan; both in angle space and
     // linear space
@@ -396,8 +396,7 @@ namespace ackermann_local_planner {
       // - possibly publish all plans considered
 
       // Compute Dubins path to the goal
-      geometry_msgs::Pose current_pose_msg;
-      tf::poseTFToMsg(current_pose, current_pose_msg);
+      geometry_msgs::Pose current_pose_msg = current_pose.pose;
 
       // if the path is backwards, invert the direction of initial and final
       // poses
